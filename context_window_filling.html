@@ -1,0 +1,137 @@
+<style>
+@keyframes slideIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes flashFull { 0%,100% { background: var(--bg-danger); } 50% { background: var(--fill-danger); } }
+.msg { animation: slideIn 0.35s ease-out; }
+.evicting { animation: slideIn 0.3s ease-out reverse forwards; }
+@media (prefers-reduced-motion: reduce) { .msg, .evicting { animation: none; } }
+.seg { transition: width 0.35s ease, opacity 0.3s ease; }
+.full-flash { animation: flashFull 0.6s ease-in-out 2; }
+body { background: #AAA; }
+</style>
+
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
+  <div style="font-size:25px; color:var(--text-secondary);">Context window</div>
+  <div style="font-size:25px; font-weight:500;" id="token-count">0 / 2,000 tokens</div>
+</div>
+
+<div id="bar" style="display:flex; width:100%; height:28px; border-radius:var(--radius); overflow:hidden; background:var(--surface-1); border:0.5px solid var(--border);"></div>
+
+<div style="display:flex; gap:16px; margin:0.5rem 0 1.25rem; font-size:16px; color:var(--text-secondary);">
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--role-gray-fill,#888780);margin-right:4px;"></span>system</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#378ADD;margin-right:4px;"></span>user</span>
+  <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1D9E75;margin-right:4px;"></span>assistant</span>
+</div>
+
+<div id="log" style="display:flex; flex-direction:column; gap:6px; min-height:320px; max-height:320px; overflow-y:auto; padding-right:4px;"></div>
+
+<div style="display:flex; gap:8px; margin-top:1rem;">
+  <button id="play-btn" onclick="togglePlay()"><i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px; margin-right:4px;"></i>Play</button>
+</div>
+
+<script>
+const CAPACITY = 2000;
+const conversation = [
+  { role: 'system', text: 'You are a helpful assistant.', tokens: 80 },
+  { role: 'user', text: 'Can you explain how photosynthesis works?', tokens: 120 },
+  { role: 'assistant', text: 'Photosynthesis converts light into chemical energy...', tokens: 260 },
+  { role: 'user', text: 'What role does chlorophyll play?', tokens: 100 },
+  { role: 'assistant', text: 'Chlorophyll absorbs light, mainly red and blue wavelengths...', tokens: 300 },
+  { role: 'user', text: 'How does this compare to cellular respiration?', tokens: 140 },
+  { role: 'assistant', text: 'Respiration is roughly the reverse process, releasing energy...', tokens: 340 },
+  { role: 'user', text: 'Can plants do both at the same time?', tokens: 110 },
+  { role: 'assistant', text: 'Yes, respiration happens continuously while photosynthesis...', tokens: 320 },
+  { role: 'user', text: 'Thanks, that makes sense now.', tokens: 70 },
+  { role: 'assistant', text: 'Glad it helped! Let me know if you want more detail.', tokens: 200 },
+  { role: 'user', text: 'One more thing, what about C4 plants?', tokens: 130 },
+];
+
+const colors = { system: '#888780', user: '#378ADD', assistant: '#1D9E75' };
+const bar = document.getElementById('bar');
+const log = document.getElementById('log');
+const tokenCount = document.getElementById('token-count');
+const playBtn = document.getElementById('play-btn');
+
+let active = [];
+let idx = 0;
+let total = 0;
+let playing = false;
+let timer = null;
+
+function render() {
+  bar.innerHTML = '';
+  active.forEach(m => {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    seg.style.width = ((m.tokens / CAPACITY) * 100) + '%';
+    seg.style.background = colors[m.role];
+    seg.style.height = '100%';
+    bar.appendChild(seg);
+  });
+  tokenCount.textContent = total.toLocaleString() + ' / ' + CAPACITY.toLocaleString() + ' tokens';
+}
+
+function addBubble(m) {
+  const row = document.createElement('div');
+  row.className = 'msg';
+  row.style.cssText = 'display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border-radius:var(--radius); background:var(--surface-1);';
+  row.dataset.id = m.id;
+  row.innerHTML = `<span style="width:8px;height:8px;margin-top:5px;border-radius:2px;background:${colors[m.role]};flex-shrink:0;"></span>
+    <div><div style="font-size:12px; color:var(--text-secondary); text-transform:capitalize;">${m.role} · ${m.tokens} tok</div>
+    <div style="font-size:14px;">${m.text}</div></div>`;
+  log.appendChild(row);
+  log.scrollTop = log.scrollHeight;
+}
+
+function evictOldest() {
+  while (total > CAPACITY && active.length > 0) {
+    const removed = active.shift();
+    total -= removed.tokens;
+    const rowEl = log.querySelector(`[data-id="${removed.id}"]`);
+    if (rowEl) {
+      rowEl.classList.add('evicting');
+      setTimeout(() => rowEl.remove(), 280);
+    }
+  }
+}
+
+function stepOnce() {
+  if (idx >= conversation.length) { stopPlay(); return; }
+  const m = { ...conversation[idx], id: idx };
+  idx++;
+  active.push(m);
+  total += m.tokens;
+  addBubble(m);
+  if (total > CAPACITY) {
+    bar.classList.add('full-flash');
+    setTimeout(() => bar.classList.remove('full-flash'), 1200);
+    evictOldest();
+  }
+  render();
+  if (idx >= conversation.length) stopPlay();
+}
+
+function togglePlay() {
+  if (playing) { stopPlay(); return; }
+  if (idx >= conversation.length) resetAll();
+  playing = true;
+  playBtn.innerHTML = '<i class="ti ti-player-pause" aria-hidden="true" style="vertical-align:-2px; margin-right:4px;"></i>Pause';
+  timer = setInterval(stepOnce, 1100);
+}
+
+function stopPlay() {
+  playing = false;
+  playBtn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true" style="vertical-align:-2px; margin-right:4px;"></i>Play';
+  clearInterval(timer);
+}
+
+function resetAll() {
+  stopPlay();
+  active = [];
+  idx = 0;
+  total = 0;
+  log.innerHTML = '';
+  render();
+}
+
+render();
+</script>

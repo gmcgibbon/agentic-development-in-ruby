@@ -1,0 +1,1696 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Agentic Development in Ruby</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/theme/night.css">
+    <link rel="stylesheet" href="https://unpkg.com/highlight.js@11.10.0/styles/github-dark.css">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "mermaid": "https://unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs",
+          "reveal.js": "https://unpkg.com/reveal.js@5.2.1/dist/reveal.esm.js",
+          "reveal.js-mermaid-plugin": "./mermaid-plugin.js",
+          "reveal.js-laser-pointer-plugin": "./laser-pointer-plugin.js",
+          "reveal.js-markdown-plugin": "https://unpkg.com/reveal.js@5.2.1/plugin/markdown/markdown.esm.js",
+          "reveal.js-highlight-plugin": "https://unpkg.com/reveal.js@5.2.1/plugin/highlight/highlight.esm.js",
+          "reveal.js-notes-plugin": "https://unpkg.com/reveal.js@5.2.1/plugin/notes/notes.esm.js"
+        }
+      }
+    </script>
+  </head>
+  <style>
+    svg {
+      max-width: 800px !important;
+      max-height: 600px !important;
+      line-height: 150%;
+      -webkit-text-stroke-width: 0.01px;
+    }
+
+    .reveal pre code {
+      max-height: 800px;
+    }
+
+    img[alt="Gannon"] {
+      width: 40%;
+      float: left;
+    }
+
+    img[alt="Thinking Agent"] {
+      width: 85%;
+    }
+
+    img[alt="Confused Agent"] {
+      width: 85%;
+    }
+
+    img[alt="Full Agent"] {
+      width: 85%;
+    }
+
+    img[alt="Working Agent"] {
+      width: 85%;
+    }
+
+    img[alt="Model Context Protocol"] {
+      width: 40%;
+    }
+
+    #agentic-coding-in-ruby {
+      padding-top: 0px;
+    }
+
+    h1 {
+      padding-top: 250px;
+    }
+
+    #mermaid-1, #mermaid-2 {
+      max-width: 500px !important;
+    }
+  </style>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-markdown>
+          <textarea data-template>
+            # Agentic Coding in Ruby
+
+            #### [Gannon McGibbon](https://gannon.io/)
+
+            Note:
+            - For WRUG September 2026
+            ---
+            ## 👋 Hi, I'm Gannon
+
+            ![Gannon](images/me.jpg)
+
+            <br>
+
+            - Developer at Shopify
+            - Committer on Rails
+            - Favorite Model is GLM
+
+            Note:
+            - A little bit about me
+            - I'm a developer at Shopify
+            - Committer on Ruby on Rails
+            - And my favorite model right now is GLM
+            - *Pause*
+            ---
+            ## Do you use a coding agent?
+
+            Note:
+            - Now, I'm curious
+            - Put your hand up if:
+            - You use coding agents at work/school?
+            - Use them once a week or more?
+            - Every day?!
+            ---
+            ## Do you use a coding agent?
+
+            Note:
+            - It's true, these days
+            - coding agents are very common
+            - If you're not using one now
+            - you're missing out
+            ---
+            ## Do you use a coding agent?
+
+            Note:
+            - Agent usage has increased
+            - substantially this year
+            - Because now
+            - agents are very good at coding
+            - And I'd like to take this opportunity
+            ---
+            ## Agenda
+
+            - Features of an Agent
+            - The Agent Harness
+            - Improving Context
+
+            Note:
+            - To talk about some concepts
+            - That are useful to know
+            - When working with agents
+            ---
+            ## Agenda
+
+            - Features of an Agent
+            - The Agent Harness
+            - Improving Context
+
+            Note:
+            - I'll cover the features of an agent
+            - How we typically talk to agents
+            - And how we can better leverage agents
+            - To solve problems
+            - *Pause*
+            ---
+            # The Agent
+
+            Note:
+            - So let's start with the agent itself
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Model
+            ```
+
+            Note:
+            - First we have the Model
+            - Which is the Large Language Model (LLM)
+            - Where cognition and reasoning happen
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Model
+            ```
+
+            Note:
+            - I'm not a data scientist
+            - So put simply
+            - You can think of this as the brain
+            - Of your agent
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Model --> Planning
+            ```
+
+            Note:
+            - There's 3 major features of an agent
+            - We should talk about:
+            - The first is planning
+            - Responsible for picking apart prompts
+            - And self-reflection
+            ---
+            ## The Agent
+
+            ```txt
+            > Add a name to product,
+              write tests, and commit it to a
+              feature branch called product_name
+            ```
+            ```txt
+            TODO:
+            - Implement product names
+            - Write tests for product names
+            - Run tests and lint
+            - Commit feature to a branch
+            ```
+
+            Note:
+            - So with a prompt like
+            - "Add a name to product, write tests,
+              and commit it to a branch"
+            - The agent will be able to break this prompt
+            - Into individual steps
+            ---
+            ## The Agent
+
+            ```txt
+            > Add a name to product,
+              write tests, and commit it to a
+              feature branch called product_name
+            ```
+            ```txt
+            TODO:
+            - Implement product names
+            - Write tests for product names
+            - Run tests and lint
+            - Commit feature to a branch
+            ```
+
+            Note:
+            - In this case:
+            - Implementation
+            - Writing tests
+            - Verification
+            - And committing
+            ---
+            ## The Agent
+
+            ```txt
+            > Add a name to product,
+              write tests, and commit it to a
+              feature branch called product_name
+            ```
+            ```txt
+            TODO:
+            - Implement product names
+            - Write tests for product names
+            - Run tests and lint
+            - Commit feature to a branch
+            ```
+
+            Note:
+            - Agents can also reduce toil
+            - By using this next feature
+            - To cut down on redundant work
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Model --> Planning
+                Model --> Memory
+            ```
+
+            Note:
+            - Memory
+            - Agents don't have long-term memory
+            - And they need to be constantly reminded of things
+            ---
+            ## The Agent
+
+            ![Thinking Agent](images/thinking_agent.png)
+
+            Note:
+            - And all the info you feed it
+            - Counts toward an overall "context window"
+            - Which is the amount of info
+            - An agent can work with at once
+            ---
+            ## The Agent
+
+            ![Thinking Agent](images/thinking_agent.png)
+
+            Note:
+            - Longer-term memory can be simulated
+            - By repeating context
+            - Or with external data stores
+            - Via this next feature
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Model --> Planning
+                Model --> Memory
+                Model --> Tools
+            ```
+
+            Note:
+            - Tools
+            - Tools are the capabilities of the agent
+            - Without them, the agent is just a talking head
+            ---
+            ## The Agent
+
+            ![Working Agent](images/working_agent.png)
+
+            Note:
+            - Tools enable tasks like
+            - Reading and writing files
+            - Searching the web
+            - Or writing code
+            ---
+            ## The Agent
+
+            ```mermaid
+            flowchart TD
+                Request --> Model
+                Model --> Planning
+                Model --> Memory
+                Model --> Tools
+            ```
+
+            Note:
+            - Agents take requests from users
+            - These requests contain prompts
+            - And agents use these features
+            - To work on supplied prompts
+            - *Pause*
+            ---
+            # The Harness
+
+            Note:
+            - Now, most of us talk to agents
+            - Through a special program
+            - Called an agent harness
+            ---
+            ## The Harness
+
+            ![Pi](images/pi.png)
+
+            Note:
+            - It could be through an editor like VS Code
+            - Through a dedicated app like Pi
+            - Or some other custom implementation
+            ---
+            ## The Harness
+
+            ![Pi](images/pi.png)
+
+            Note:
+            - No two harnesses are the same
+            - And no one harness is the best
+            - But I've been really enjoying Pi
+            - So I'll be referencing it in this presentation
+            ---
+            ## The Harness
+
+            ![Model Context Protocol](images/mcp.svg)
+
+            Note:
+            - You may have heard about Model Context Protocol (MCP)
+            - I talked about it last year
+            - You can use MCP with Pi
+            - But Pi doesn't use MCP to provide tools
+            - It includes tools in model requests
+            ---
+            ## The Harness
+
+            ```json[]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - So a request from Pi to Claude
+            - Would look something like this
+            - Let's zoom into the details
+            ---
+            ## The Harness
+
+            ```json[2]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - First we have the model
+            - This is just the brain you want to talk to
+            - Anthropic has multiple models
+            - At different efficiency + price points
+            - Here, we're talking to Claude Fable 5.1
+            ---
+            ## The Harness
+
+            ```json[3]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - Next is max tokens
+            - Which is the most the agent can spend
+            - To generate the next response
+            ---
+            ## The Harness
+
+            ```json[3]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - For most models, 8192 is the default ceiling
+            - Lowering this won't make the responses less wordy
+            - It might cut responses short
+            ---
+            ## The Harness
+
+            ```json[4]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "You are an expert coding assistant...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - System is your system prompt
+            - This is the baseline level of context you provide to the agent
+            - In Pi's case, it explains a few things
+            ---
+            ## The Harness
+
+            ```json[4]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "You are an expert coding assistant...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - That the model is a coding assistant
+            - A listing of skills and capabilities
+            - General guidelines for the agent
+            - And so on
+            ---
+            ## The Harness
+
+            ```json[5-7]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [
+                {"role": "user", "content": "Generate a user model..."}
+              ],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - Next up there's messages
+            - This is the conversation so far
+            - Your messages will end up here
+            - And the agent's messages will too
+            ---
+            ## The Harness
+
+            ```json[5-7]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [
+                {"role": "user", "content": "Generate a user model..."}
+              ],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - Here we have a user message
+            - To generate a User model
+            - Messages include text
+            - As well as actions taken
+            ---
+            ## The Harness
+
+            ```json[6-21]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": [
+                {
+                  "name": "read",
+                  "description": "Read the contents of a file",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "path": { "type": "string" },
+                      "view_range": {
+                        "type": "array", "items": { "type": "integer" }
+                      }
+                    },
+                    "required": ["path"]
+                  }
+                }
+              ]
+            }
+            ```
+
+            Note:
+            - Finally there's tools
+            - The capabilities you give your agent
+            - By default, Pi provides 4 tools only
+            - Read, write, edit, and bash
+            ---
+            ## The Harness
+
+            ```json[6-21]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": [
+                {
+                  "name": "read",
+                  "description": "Read the contents of a file",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "path": { "type": "string" },
+                      "view_range": {
+                        "type": "array", "items": { "type": "integer" }
+                      }
+                    },
+                    "required": ["path"]
+                  }
+                }
+              ]
+            }
+            ```
+
+            Note:
+            - This is what the read tool looks like
+            - It can accept a path
+            - And an optional range
+            - Similar to an MCP tool definition
+            ---
+            ## The Harness
+
+            ```json[6-21]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": [
+                {
+                  "name": "read",
+                  "description": "Read the contents of a file",
+                  "input_schema": {
+                    "type": "object",
+                    "properties": {
+                      "path": { "type": "string" },
+                      "view_range": {
+                        "type": "array", "items": { "type": "integer" }
+                      }
+                    },
+                    "required": ["path"]
+                  }
+                }
+              ]
+            }
+            ```
+
+            Note:
+            - Pi's toolset is intentionally minimal
+            - To reduce cost and complexity
+            - Because every request must include
+            - The full set of tools and messages
+            ---
+            ## The Harness
+
+            ```json[]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - Now that we know what requests look like
+            - Let's look at responses
+            - The data you get back from an agent
+            ---
+            ## The Harness
+
+            ```json[2-5]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - The first few keys are self-explanatory
+            - ID is a specific unique identifier
+            - Type is always going to be message
+            ---
+            ## The Harness
+
+            ```json[2-5]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - Role is the source of the message
+            - Which is assistant for agent messages
+            - Our messages have a user role
+            - And model is the LLM that's talking to you
+            ---
+            ## The Harness
+
+            ```json[6-17]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [
+                {
+                  "type": "thinking",
+                  "text": "I need to read the user file..."
+                },
+                {
+                  "type": "tool_use",
+                  "name": "read",
+                  "input": { "path": "app/models/user.rb" }
+                }
+              ],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - Content is the guts of the response
+            - Where the agent can give feedback
+            - Request to use tools
+            - Or share what it is thinking
+            ---
+            ## The Harness
+
+            ```json[6-17]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [
+                {
+                  "type": "thinking",
+                  "text": "I need to read the user file..."
+                },
+                {
+                  "type": "tool_use",
+                  "name": "read",
+                  "input": { "path": "app/models/user.rb" }
+                }
+              ],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - In this case,
+            - We have thinking and tool use content
+            - The agent wants to read a file
+            - Called user.rb
+            - And is requesting to read that file
+            ---
+            ## The Harness
+
+            ```json[7-8]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - Next up we have stop reason and stop sequence
+            - This is why the agent left off where it did
+            - It could be a natural stop (end_turn)
+            - A request to use a tool (tool_use)
+            ---
+            ## The Harness
+
+            ```json[7-8]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": {}
+            }
+            ```
+
+            Note:
+            - Maybe we ran out of tokens (max_tokens)
+            - Or it halted because of a
+            - Stop condition we specified (stop_sequence)
+            ---
+            ## The Harness
+
+            ```json[9]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": { "input_tokens": 100, "output_tokens": 20 }
+            }
+            ```
+
+            Note:
+            - Finally there's usage
+            - This tells you the cost of the message
+            - In tokens
+            - And if you're curious
+            - A token is ~4 characters of text
+            - But this differs depending on the model
+            ---
+            ## The Harness
+
+            ```json[9]
+            {
+              "id": "msg_123",
+              "type": "message",
+              "role": "assistant",
+              "model": "claude-fable-5-1",
+              "content": [],
+              "stop_reason": "tool_use",
+              "stop_sequence": null,
+              "usage": { "input_tokens": 100, "output_tokens": 20 }
+            }
+            ```
+
+            Note:
+            - Input tokens are the cost of your request
+            - Output tokens are the cost of the response
+            - Which tells you how much you're spending
+            - And how much context window is used
+            ---
+            ## The Harness
+
+            <iframe src="context_window_filling.html" title="Context window example" style="width:100%; height:520px; border:0;">
+            </iframe>
+
+            Note:
+            - This is a visualization
+            - Of an agent's context filling up
+            - As a conversation goes on
+            - We can see the cost of each request go up
+            - Until we hit the limit
+            ---
+            ## The Harness
+
+            ![Full Agent](images/full_agent.png)
+
+            Note:
+            - Because the model doesn't keep track
+            - Of state between requests
+            - Requests always contain the full conversation
+            - So the longer your session is:
+            - The higher the cost and complexity
+            ---
+            ## The Harness
+
+            ![Pi](images/pi.png)
+
+            Note:
+            - Harnesses allow you to swap models
+            - Expose new tools
+            - Tune some of the numbers in these requests
+            - Along with several other features
+            ---
+            ## The Harness
+
+            ![Pi](images/pi.png)
+
+            Note:
+            - Pi is useful because
+            - On top of all of this
+            - It has a package ecosystem
+            - It's hackable with TypeScript
+            - Supports most models available today
+            - Over 1000
+            - *Pause*
+            ---
+            # The Context
+
+            Note:
+            - And that's the basics of agent harnesses
+            - Now, let's talk about ways
+            - To provide an agent with context
+            ---
+            ## The Context
+
+            ![Confused Agent](images/confused_agent.png)
+
+            Note:
+            - As developers
+            - Our main goal in the agent loop
+            - Is to give agents enough information
+            - To do their job well
+            ---
+            ## The Context
+
+            ![Confused Agent](images/confused_agent.png)
+
+            Note:
+            - Models have general knowledge of code
+            - And the baseline is getting better and better
+            - But every project is unique
+            ---
+            ## The Context
+
+            ```rb[]
+            # frozen_string_literal: true
+
+            class UsersController < ApplicationController
+              include Authentication
+
+              before_action :require_login
+
+              def show
+                @preferences = User.current.preferences
+              end
+            end
+            ```
+
+            Note:
+            - Business logic
+            - Software patterns
+            - Coding style
+            - All of these can cause friction
+            - For an agent
+            ---
+            ## The Context
+
+            ```rb[]
+            # frozen_string_literal: true
+
+            class UsersController < ApplicationController
+              include Authentication
+
+              before_action :require_login
+
+              def show
+                @preferences = User.current.preferences
+              end
+            end
+            ```
+
+            Note:
+            - So what can we do?
+            - I think there's 3 things
+            - Let's go over each one
+            ---
+            ## The Context
+
+            ```md[]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - The first is the AGENTS.md file
+            - Pi loads it automatically
+            - From your project root
+            - And injects it into your system prompt
+            ---
+            ## The Context
+
+            ```md[1-2]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - It should cover an overview of the project
+            ---
+            ## The Context
+
+            ```md[4-7]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - Common workflows like testing and linting
+            ---
+            ## The Context
+
+            ```md[9-11]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - And any special considerations
+            ---
+            ## The Context
+
+            ```md[9-11]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - Like general coding advice
+            - In this case linting before every commit
+            - And not using metaprogramming
+            ---
+            ## The Context
+
+            ```md[]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - But if you're like me
+            - You might ask
+            - What about the README?
+            - We already have a file that has most of this
+            ---
+            ## The Context
+
+            ```md[]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Commands
+            - `bin/rails server` Run the server
+            - `bin/rails test` Run tests
+            - `bin/rubocop` Run linting
+
+            ## Best Practices
+            - Lint before every commit
+            - Use metaprogramming sparingly
+            ```
+
+            Note:
+            - And you'd be right
+            - We could use the README
+            - But there's a reason we use AGENTS.md
+            - And that's mainly the context window
+            ---
+            ## The Context
+
+            ```md[]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Setup
+            - Install mysql with `brew install mysql`
+            - Install memcached with `brew install memcached`
+            - Run `bin/setup`
+
+            ## Commands
+            ...
+
+            ## License
+            ...
+            ```
+
+            Note:
+            - Agents need technical info
+            - Humans need more than that
+            - Usage info
+            - High-level technical details
+            - And even things like licensing
+            ---
+            ## The Context
+
+            ```md[]
+            ## Blog
+            A blogging Rails app with posts and comments.
+
+            ## Setup
+            - Install mysql with `brew install mysql`
+            - Install memcached with `brew install memcached`
+            - Run `bin/setup`
+
+            ## Commands
+            ...
+
+            ## License
+            ...
+            ```
+
+            Note:
+            - So a concise AGENTS.md is best
+            - Theoretically it should
+            - Keep token costs down
+            - And decrease toil
+            ---
+            ## The Context
+
+            ```md[]
+            # Ruby on Rails Codebase Guide for AI Coding Agents
+            This is the code base of the Ruby on Rails web framework.
+
+            ## Architecture Overview
+            ...
+
+            ## Testing Commands
+            ...
+
+            ## Configuration Testing Patterns
+            ...
+
+            ## Code Conventions
+            ...
+            ```
+
+            Note:
+            - If we take a look
+            - At another example
+            - The Rails repo has an AGENTS.md
+            ---
+            ## The Context
+
+            ```md[]
+            # Ruby on Rails Codebase Guide for AI Coding Agents
+            This is the code base of the Ruby on Rails web framework.
+
+            ## Architecture Overview
+            ...
+
+            ## Testing Commands
+            ...
+
+            ## Configuration Testing Patterns
+            ...
+
+            ## Code Conventions
+            ...
+            ```
+
+            Note:
+            - It includes things like
+            - An overview of the different gems
+            - How to use the test runner
+            - Patterns in testing
+            - When to write a changelog
+            - And documentation syntax
+            ---
+            ## The Context
+
+            ```md[]
+            # Welcome to Rails
+
+            ## What's Rails?
+            Rails is a web application framework...
+
+            ## Model layer
+            ...
+
+            ## View layer
+            ...
+
+            ## Controller layer
+            ...
+
+            ## Frameworks and libraries
+            ...
+
+            ## Getting Started
+            ...
+            ```
+
+            Note:
+            - The README on the other hand
+            - Gives a much more general intro
+            - Talking about MVC
+            - Different layers of abstraction
+            - And usage instructions
+            - *Pause*
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: rock-paper-scissors
+            description: Play rock paper scissors
+            ---&nbsp;
+
+            To play, pick between rock, paper or scissors.
+            You may use this bash script to pick a number
+            between 1 and 3:
+
+            ```bash&nbsp;
+            ruby -e "p rand(1..3)"
+            ```&nbsp;
+
+            1 = rock, 2 = paper, and 3 = scissors.
+            Don't reveal your chosen move until the user has.
+            Once the user and agent have both chosen, the
+            moves are revealed. Rock beats scissors,
+            paper beats rock, and scissors beats paper.
+            Everything else is a draw.
+            ```
+
+            Note:
+            - Once you have a solid AGENTS.md
+            - You might want to look into skills
+            - These are files you can write
+            - To teach an agent to do something
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: rock-paper-scissors
+            description: Play rock paper scissors
+            ---&nbsp;
+
+            To play, pick between rock, paper or scissors.
+            You may use this bash script to pick a number
+            between 1 and 3:
+
+            ```bash&nbsp;
+            ruby -e "p rand(1..3)"
+            ```&nbsp;
+
+            1 = rock, 2 = paper, and 3 = scissors.
+            Don't reveal your chosen move until the user has.
+            Once the user and agent have both chosen, the
+            moves are revealed. Rock beats scissors,
+            paper beats rock, and scissors beats paper.
+            Everything else is a draw.
+            ```
+
+            Note:
+            - Skills are defined in folders with Markdown files
+            - You can include assets with them
+            - Pi scans for skills automatically
+            - And mentions them in the system prompt
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: rock-paper-scissors
+            description: Play rock paper scissors
+            ---&nbsp;
+
+            To play, pick between rock, paper or scissors.
+            You may use this bash script to pick a number
+            between 1 and 3:
+
+            ```bash&nbsp;
+            ruby -e "p rand(1..3)"
+            ```&nbsp;
+
+            1 = rock, 2 = paper, and 3 = scissors.
+            Don't reveal your chosen move until the user has.
+            Once the user and agent have both chosen, the
+            moves are revealed. Rock beats scissors,
+            paper beats rock, and scissors beats paper.
+            Everything else is a draw.
+            ```
+
+            Note:
+            - In this case
+            - We have a rock paper scissors skill
+            - That defines game rules to an agent
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: rock-paper-scissors
+            description: Play rock paper scissors
+            ---&nbsp;
+
+            To play, pick between rock, paper or scissors.
+            You may use this bash script to pick a number
+            between 1 and 3:
+
+            ```bash&nbsp;
+            ruby -e "p rand(1..3)"
+            ```&nbsp;
+
+            1 = rock, 2 = paper, and 3 = scissors.
+            Don't reveal your chosen move until the user has.
+            Once the user and agent have both chosen, the
+            moves are revealed. Rock beats scissors,
+            paper beats rock, and scissors beats paper.
+            Everything else is a draw.
+            ```
+
+            Note:
+            - Like tools, skills are chosen at the agent's discretion
+            - Only the name and description are always in context
+            - The full skill markdown is read on use
+            - Which cuts down on token cost a bit
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: kr2s-was-i-vulnerable
+            description: |
+              Determine whether a Rails app was
+              exposed to CVE-2026-66066
+            triggers:
+              - kr2s-was-i-vulnerable
+              - was i vulnerable?
+            ---&nbsp;
+            # kr2s-was-i-vulnerable
+
+            Open `@references/guide.md` and follow it.
+            Do not proceed without it.
+
+            Determines whether a Rails application was ever
+            exposed to CVE-2026-66066...
+            ```
+
+            Note:
+            - Here's a more complicated example
+            - And I think this is super interesting
+            - Rails recently disclosed a security vulnerability
+            ---
+            ## The Context
+
+            ```md[]
+            ---&nbsp;
+            name: kr2s-was-i-vulnerable
+            description: |
+              Determine whether a Rails app was
+              exposed to CVE-2026-66066
+            triggers:
+              - kr2s-was-i-vulnerable
+              - was i vulnerable?
+            ---&nbsp;
+            # kr2s-was-i-vulnerable
+
+            Open `@references/guide.md` and follow it.
+            Do not proceed without it.
+
+            Determines whether a Rails application was ever
+            exposed to CVE-2026-66066...
+            ```
+
+            Note:
+            - Related to Active Storage
+            - And the team released skills to help developers
+            - Determine if an app is exploitable
+            - And if an app was exploited
+            ---
+            ## The Context
+
+            ```txt
+            > Was I impacted by CVE-2026-66066?
+            ```
+
+            Note:
+            - So you can copy the skill
+            - Open up your harness
+            - Simply ask if you were affected
+            - And it will tell you
+            - *Pause*
+            ---
+            ## The Context
+
+            ![Working Agent](images/working_agent.png)
+
+            Note:
+            - The last thing
+            - We can do to help provide context
+            - Is fairly obvious
+            ---
+            ## The Context
+
+            ![Working Agent](images/working_agent.png)
+
+            Note:
+            - We should provide clear, understandable prompts
+            - LLMs are way better at performing tasks
+            - That are well-defined
+            ---
+            ## The Context
+
+            ![Working Agent](images/working_agent.png)
+
+            Note:
+            - So if you're starting a new project
+            - Or writing a complicated feature
+            - It's a good idea to be
+            - Very specific about what you want
+            ---
+            ## The Context
+
+            ![Confused Agent](images/confused_agent.png)
+
+            Note:
+            - Otherwise
+            - The agent will make guesses
+            - Make mistakes
+            - Get confused
+            - And end up costing you time and tokens
+            ---
+            ## The Context
+
+            ```txt
+            > Make a TODO list app that can:
+            - Create lists
+            - Delete lists
+            - Create list items
+            - Delete list items
+            ```
+
+            Note:
+            - Let's look at an example
+            - Here we have a prompt
+            - To spin up a TODO list app
+            - To make an app that can create and delete lists
+            ---
+            ## The Context
+
+            ```txt
+            > Make a TODO list app that can:
+            - Create lists
+            - Delete lists
+            - Create list items
+            - Delete list items
+            ```
+
+            Note:
+            - This is leaving out a few things
+            - What language or framework will you use?
+            - What storage?
+            - What front end?
+            - Will there be tests?
+            - That's up to the agent
+            ---
+            ## The Context
+
+            ```txt
+            > Make a TODO list app that:
+            - Is a Rails application
+            - Uses SQLite to store todo lists
+            - Has a React front end via import maps
+            - Can create and delete lists and list items
+            - Is well tested (unit and integration tests)
+            ```
+
+            Note:
+            - This prompt is much more specific
+            - It mentions both technologies
+            - And functional requirements
+            ---
+            ## The Context
+
+            ```txt
+            > Read PLAN.md and work on the TODO list
+            ```
+
+            ```txt
+            Create a TODO list app that:
+            - [ ] Is a Rails application
+            - [ ] Uses SQLite to store todo lists
+            - [ ] Has a React front end via import maps
+            - [ ] Can create and delete lists and list items
+            - [ ] Is well tested (unit and integration tests)
+            ```
+
+            Note:
+            - Better yet
+            - If we're getting an agent
+            - To work on something really complex
+            - We can write out a plan
+            ---
+            ## The Context
+
+            ```txt
+            > Read PLAN.md and work on the TODO list
+            ```
+
+            ```txt
+            Create a TODO list app that:
+            - [ ] Is a Rails application
+            - [ ] Uses SQLite to store todo lists
+            - [ ] Has a React front end via import maps
+            - [ ] Can create and delete lists and list items
+            - [ ] Is well tested (unit and integration tests)
+            ```
+
+            Note:
+            - This makes large bodies of work
+            - More retryable
+            - And keeps the objective clear
+            - In case we start overflowing context
+            ---
+            ## The Context
+
+            ```txt
+            > Read PLAN.md and work on the TODO list
+            ```
+
+            ```txt
+            Create a TODO list app that:
+            - [ ] Is a Rails application
+            - [ ] Uses SQLite to store todo lists
+            - [ ] Has a React front end via import maps
+            - [ ] Can create and delete lists and list items
+            - [ ] Is well tested (unit and integration tests)
+            ```
+
+            Note:
+            - If you find an agent is getting confused
+            - With something you ask it to do
+            - Try being more specific
+            - Narrowing the problem scope
+            - Or using a persisted plan file
+            - *Pause*
+            ---
+            # Conclusion
+
+            Note:
+            - So let's quickly recap
+            - What I talked about today
+            ---
+            ## Conclusion
+
+            ```mermaid
+            flowchart TD
+                Request --> Model
+                Model --> Planning
+                Model --> Memory
+                Model --> Tools
+            ```
+
+            Note:
+            - I talked about the main features
+            - Of an agent
+            - That's planning
+            - Memory
+            - And tool use
+            ---
+            ## Conclusion
+
+            ```json[]
+            {
+              "model": "claude-fable-5-1",
+              "max_tokens": 8192,
+              "system": "...",
+              "messages": [],
+              "tools": []
+            }
+            ```
+
+            Note:
+            - And then the harness
+            - What requests and responses look like
+            - In the context of Pi
+            - Talking to Claude
+            ---
+            ## Conclusion
+
+            ```md
+            ---&nbsp;
+            name: rock-paper-scissors
+            description: Play rock paper scissors
+            ---&nbsp;
+
+            To play, pick between rock, paper or scissors.
+            You may use this bash script to pick a number
+            between 1 and 3:
+
+            ```bash&nbsp;
+            ruby -e "p rand(1..3)"
+            ```&nbsp;
+
+            1 = rock, 2 = paper, and 3 = scissors.
+            Don't reveal your chosen move until the user has.
+            Once the user and agent have both chosen, the
+            moves are revealed. Rock beats scissors,
+            paper beats rock, and scissors beats paper.
+            Everything else is a draw.
+            ```
+
+            Note:
+            - And finally the methods we have
+            - To provide context to LLMs
+            - AGENTS.md
+            - Skills
+            - And writing good prompts
+            - *Pause*
+            ---
+            # Demo
+
+            Note:
+            - Setup pi
+            - Talk to Codex
+            - Subagents package - fix this ttttypo
+            - Play rock paper scissors
+            - Export and view session
+            - Look at omp
+            ---
+            ![Repo QR Code](images/qr.png)
+
+            Note:
+            - That's it
+            - You can find the repo at this QR code
+            - Are there any questions?
+            ---
+            # Thank You
+
+            Note:
+            - Thank you
+            ---
+            ## Further Reading
+            - https://www.promptingguide.ai/research/llm-agents
+            - https://pi.dev/docs/latest
+            - https://platform.claude.com/docs/en/api/http/beta/messages/create
+            - https://agents.md/
+            - https://agentskills.io/
+            ---
+          </textarea>
+        </section>
+      </div>
+    </div>
+    <script type="module">
+      import Reveal from 'reveal.js'
+      import Markdown from 'reveal.js-markdown-plugin'
+      import Mermaid from 'reveal.js-mermaid-plugin'
+      import LaserPointer from 'reveal.js-laser-pointer-plugin'
+      import Highlight from 'reveal.js-highlight-plugin'
+      import Notes from 'reveal.js-notes-plugin'
+
+      const deck = new Reveal({
+        plugins: [
+          Markdown,
+          Mermaid,
+          Highlight,
+          LaserPointer,
+          Notes,
+        ]
+      })
+      deck.initialize({
+        autoPlayMedia: true,
+        transition: 'none',
+        center: false,
+        controls: false,
+        hash: true,
+        controlsBackArrows: 'hidden',
+        mermaid: {
+          theme: 'dark',
+          themeVariables: {
+            signalTextColor: '',
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
